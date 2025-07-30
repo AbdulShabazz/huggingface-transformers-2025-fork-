@@ -36,21 +36,7 @@ limitations under the License.
 
 <h4 align="center">
     <p>
-        <b>English</b> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_zh-hans.md">简体中文</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_zh-hant.md">繁體中文</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_ko.md">한국어</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_es.md">Español</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_ja.md">日本語</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_hd.md">हिन्दी</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_ru.md">Русский</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_pt-br.md">Português</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_te.md">తెలుగు</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_fr.md">Français</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_de.md">Deutsch</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_vi.md">Tiếng Việt</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_ar.md">العربية</a> |
-        <a href="https://github.com/huggingface/transformers/blob/main/i18n/README_ur.md">اردو</a> |
+        <b>English</b>
     </p>
 </h4>
 
@@ -62,17 +48,12 @@ limitations under the License.
     <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/transformers/transformers_as_a_model_definition.png"/>
 </h3>
 
-
 Transformers acts as the model-definition framework for state-of-the-art machine learning models in text, computer 
-vision, audio, video, and multimodal model, for both inference and training. 
+vision, audio, video, and multimodal model, for both inference and training. Visit the upstream Hugging Face for [installation instructions](https://github.com/huggingface/transformers).
 
-It centralizes the model definition so that this definition is agreed upon across the ecosystem. `transformers` is the 
-pivot across frameworks: if a model definition is supported, it will be compatible with the majority of training 
-frameworks (Axolotl, Unsloth, DeepSpeed, FSDP, PyTorch-Lightning, ...), inference engines (vLLM, SGLang, TGI, ...),
-and adjacent modeling libraries (llama.cpp, mlx, ...) which leverage the model definition from `transformers`.
+## Huggingface-transformer-2025-fork-
 
-We pledge to help support new state-of-the-art models and democratize their usage by having their model definition be
-simple, customizable, and efficient.
+This architecture, after initial training, distills subsequent datasets as SQL databases. The inititial (stochastic) model is then refined via the integration of a theorem prover into a decidable (i.e., deterministic) architecture, which employs next token generation via computable logic. Ontology synergy matching capabilities are employed in situations where next-token prediction constraints stall or are inadequate.
 
 There are over 1M+ Transformers [model checkpoints](https://huggingface.co/models?library=transformers&sort=trending) on the [Hugging Face Hub](https://huggingface.com/models) you can use.
 
