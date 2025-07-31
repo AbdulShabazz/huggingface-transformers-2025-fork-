@@ -48,7 +48,7 @@ limitations under the License.
     <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/transformers/transformers_as_a_model_definition.png"/>
 </h3>
 <p>
-Transformers acts as the model-definition framework for state-of-the-art machine learning models in text, computer 
+Transformers act as the model-definition framework for state-of-the-art machine learning models in text, computer 
 vision, audio, video, and multimodal model, for both inference and training. Visit the upstream Hugging Face for [installation instructions](https://github.com/huggingface/transformers).
 
 ## Huggingface-transformer-2025-fork-
