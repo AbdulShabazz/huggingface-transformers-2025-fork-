@@ -178,7 +178,6 @@ def contrapositive {A B : Prop} : Proof (Prop.imp (Prop.imp A B) (Prop.imp (Prop
 ## Extensibility
 
 * To support **quantifiers**, add:
-
   * `Prop.forall : (α : Type) → (α → Prop) → Prop`
   * `Prop.exists : (α : Type) → (α → Prop) → Prop`
 * Add dependent types over universes `Type u` as needed.
