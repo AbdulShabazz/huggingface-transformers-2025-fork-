@@ -206,7 +206,7 @@ def contrapositive {A B : Prop} : Proof (Prop.imp (Prop.imp A B) (Prop.imp (Prop
 | 1 | 1 | 0 |
 <hr>
 
-### A NAND B
+### A NOR B
 | A | B | F |
 |---|---|---|
 | 0 | 0 | 1 |
@@ -260,7 +260,7 @@ def contrapositive {A B : Prop} : Proof (Prop.imp (Prop.imp A B) (Prop.imp (Prop
 | 1 | 1 | 0 |
 <hr>
 
-### A NOR B
+### A NAND B
 | A | B | F |
 |---|---|---|
 | 0 | 0 | 1 |
