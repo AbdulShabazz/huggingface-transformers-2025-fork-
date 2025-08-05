@@ -39,19 +39,17 @@ from tqdm.auto import tqdm
 from utils_qa import postprocess_qa_predictions_with_beam_search
 
 import transformers
+from transformers.optimization import get_scheduler
+from transformers.data.data_collator import DataCollatorWithPadding, default_data_collator
+from transformers.trainer_utils import EvalPrediction, SchedulerType
 from transformers import (
-    DataCollatorWithPadding,
-    EvalPrediction,
-    SchedulerType,
     XLNetConfig,
     XLNetForQuestionAnswering,
-    XLNetTokenizerFast,
-    default_data_collator,
-    get_scheduler,
+    XLNetTokenizerFast
 )
-from transformers.utils import check_min_version, send_example_telemetry
+from transformers.utils import check_min_version
+from transformers.utils.hub import send_example_telemetry
 from transformers.utils.versions import require_version
-
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.55.0.dev0")
@@ -377,7 +375,7 @@ def main():
         if args.test_file is not None:
             data_files["test"] = args.test_file
             extension = args.test_file.split(".")[-1]
-        raw_datasets = load_dataset(extension, data_files=data_files, field="data")
+        raw_datasets = load_dataset(extension, data_files=data_files, field="data") # type: ignore
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.
 
@@ -394,7 +392,9 @@ def main():
 
     # Preprocessing the datasets.
     # Preprocessing is slightly different for training and evaluation.
-    column_names = raw_datasets["train"].column_names
+    assert isinstance(raw_datasets["train"].column_names, list)
+    
+    column_names = list(raw_datasets["train"].column_names)
 
     question_column_name = "question" if "question" in column_names else column_names[0]
     context_column_name = "context" if "context" in column_names else column_names[1]
