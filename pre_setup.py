@@ -126,6 +126,7 @@ _deps = [
     "unidic_lite>=1.0.7",
     "urllib3<2.0.0",
     "uvicorn",
+    "wandb",
     "pytest-rich",
     "libcst",
     "rich",
