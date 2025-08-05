@@ -73,6 +73,7 @@ _deps = [
     "packaging>=20.0",
     "parameterized>=0.9",  # older version of parameterized cause pytest collection to fail on .expand
     "phonemizer",
+    "peft", # increased gpt training efficiency
     "protobuf",
     "psutil",
     "pyyaml>=5.1",
