@@ -23,13 +23,12 @@ import regex as re
 import tiktoken
 import torch
 from safetensors.torch import load_file as safe_load
+from transformers.models import GenerationConfig
+from transformers.tokenization_utils_fast import PreTrainedTokenizerFast
 
-from transformers import (
-    GenerationConfig,
-    GptOssConfig,
-    GptOssForCausalLM,
-    PreTrainedTokenizerFast,
-)
+from configuration_gpt_oss import GptOssConfig
+from modeling_gpt_oss import GptOssForCausalLM
+
 from transformers.convert_slow_tokenizer import TikTokenConverter
 
 
@@ -185,7 +184,7 @@ def write_model(
     for key in all_keys:
         # Post-process the current_parameter.
         new_key = new_keys.get(key, key)
-        if "lm_head" not in new_key:
+        if new_key and "lm_head" not in new_key:
             new_key = "model." + new_key
         print(f"Processing key: {key} -> {new_key}")
         if re.search("qkv_proj", new_key):
