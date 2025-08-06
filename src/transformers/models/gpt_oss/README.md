@@ -1,8 +1,4 @@
-Here is a detailed technical overview of **OpenAI GPT‑OSS**, based on the latest available from August 5, 2025:
-
----
-
-## Model Variants & Licensing
+## OpenAI GPT-OSS [Model Variants & Licensing]
 
 * **gpt‑oss‑120b**
 
