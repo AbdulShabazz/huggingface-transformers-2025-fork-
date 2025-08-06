@@ -8,6 +8,19 @@ from transformers.data.data_collator import DataCollatorForLanguageModeling
 import re
 from pathlib import Path
 
+'''
+# LoRA Config
+r=16, lora_alpha=32, lora_dropout=0.1
+target_modules=["c_attn", "c_proj"]  # attention layers only
+
+# Training Args  
+num_train_epochs=2
+per_device_train_batch_size=8
+learning_rate=1e-4
+warmup_steps=100
+max_length=512  # for tokenization
+'''
+
 def extract_lemmas(mathlib_path):
     pattern = r'lemma\s+(\w+).*?:\s*(.+?)(?=:=|by)'
     lemmas = []
