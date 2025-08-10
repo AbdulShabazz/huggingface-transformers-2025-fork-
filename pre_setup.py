@@ -65,6 +65,7 @@ _deps = [
     "onnxruntime-tools>=1.4.2",
     "onnxruntime>=1.4.0",
     "openai",
+    "openai-harmony",
     "opencv-python",
     "optimum-benchmark>=0.3.0",
     "optuna",
