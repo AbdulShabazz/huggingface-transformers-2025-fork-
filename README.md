@@ -53,7 +53,7 @@ vision, audio, video, and multimodal model, for both inference and training. Vis
 
 ## Huggingface-transformer-2025-fork-
 
-This architecture, after initial training, distills subsequent datasets and rulesets as an extensible relational database. The inititial (stochastic) model is then refined via an interactive SQL database with builtin selective commit-based support to capture state; along with the integration of a theorem prover (conceived as a constraint-based, indexable tensor field) to ultimately realize a decidable (i.e., deterministic) architecture, which employs next-token generation via discernable logic. Ontology synergy-matching capabilities is also supported for situations where next-token prediction constraints are inadequate.
+This architecture, after initial training, distills subsequent datasets and rulesets as an extensible relational database. The inititial (stochastic) model is then refined via an interactive SQL database with builtin selective commit-based support to capture state; along with an integrated theorem prover (modeled as a constraint-based, indexable tensor-field) to ultimately realize a decidable (i.e., deterministic) architecture, which employs next-token generation via deterministic logic. Ontology synergy-matching capabilities is also supported for situations where next-token prediction constraints are inadequate.
 
 Builtin Production Grammar
 
