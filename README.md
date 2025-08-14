@@ -195,6 +195,14 @@ def contrapositive {A B : Prop} : Proof (Prop.imp (Prop.imp A B) (Prop.imp (Prop
 
 **Future Prototypes**: translate this into **executable Lean 4**, or integrate **tactics** and **custom proof automation**?
 
+**TENSOR-FIELD Logic Construction**
+
+ANDs[[ORs,...],...]
+
+ANDs (Addition/Multiplication); ORs (Subtraction/Division)
+
+Axioms/IDs are Primes; subsets divide; supersets are product-equivalents.
+
 **Truth Tables**
 
 ### 0 (False)
