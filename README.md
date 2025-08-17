@@ -53,9 +53,180 @@ vision, audio, video, and multimodal model, for both inference and training. Vis
 
 ## Huggingface-transformer-2025-fork-
 
-This architecture, after initial training, distills subsequent datasets and rulesets as an extensible relational database. The inititial (stochastic) model is then refined via an interactive SQL database with builtin selective commit-based support to capture state; along with an integrated theorem prover (modeled as a constraint-based, indexable tensor-field) to ultimately realize a decidable (i.e., deterministic) architecture, which employs next-token generation via deterministic logic. Ontology synergy-matching capabilities is also supported for situations where next-token prediction constraints are inadequate.
+This architecture, after initial training, distills subsequent language artifacts into an RDBMS. The inititial (stochastic) model is then refined via an integrated theorem prover (modeled as a constraint-based, indexable tensor-field) to ultimately realize a decidable (i.e., deterministic) architecture, which employs next-token generation via deterministic insight. Ontology synergy-matching capabilities is also supported for situations where next-token prediction constraints are inadequate.
 
-Builtin Production Grammar
+## Structual Overview
+
+In a deterministic novel LLM architecture I am imagining a dictionary/hash map elemental model, H[].map(...), which has constraints registers, H[].CRs. The hash map, when given an integer key, always returns two values : 1) a value whose (canonical) key closest matches an existing (hash map) key; and 2) a cosine-similarity 0.00-1.00, where 1.00 indicates certainty the key exists. The reason for this is in case the key doesn't exist in other maps (i.e., do an intuitive guess!) This data structure can be used during training to represent common language artifacts such as Categories, Subjects, and or Ideas, etc. ; and its' values distill relevant tokens -- per a match on constraints in the H[].CRs. The H[].CRs, I should mention, are Turing Complete, and capable of representing all decidable algorithms. During training, state 0 -- which includes constraints, is constructed in, for example, H[0], via (opcodes) micro instructions. Next state proceeds thereafter. This architecture is intended for common language, so the space ' ' character, format effectors and a notion of what a sentence is, is built-in to efficiently capture state. The attention (i.e., transition!) between H[x] to H[x + 1] is captured via all N next-state constraints registers, H[x +1].CR[N]. During training, a constraint-indexable tensor field serves as the theorem prover space, allowing the architecture to infer other attributes, constraints and valid states for the current state. Post-training, I considered distilling knowledge artifacts into an RDBMS!
+
+## Current Progress
+
+Here’s a structured, engineering-oriented evaluation of this deterministic LLM concept, plus concrete design suggestions and prototype specs.
+
+# 1) Where the proposal sits relative to prior art (helpful analogies)
+
+* **Externalized, addressable memory + controller.** The `H[]` memory with constraint registers resembles **Neural Turing Machines / Differentiable Neural Computers (DNC)** (neural controller + random-access memory), and **Neural Programmer / Neural Programmer-Interpreter (NPI)** (explicit program steps); those lines showed clear benefits on algorithmic and compositional tasks. ([arXiv][1], [PubMed][2])
+* **Nearest-neighbor augmentation.** The “closest canonical key” + similarity echoes **kNN-LM** and **RETRO/RAG**, which improve factuality/rare-token prediction by interpolating a base LM with similarity-based retrieval over a large datastore. ([arXiv][3], [OpenReview][4], [Proceedings of Machine Learning Research][5], [NeurIPS Proceedings][6])
+* **Symbolic-vector hybrids.** The constrained registers + key-value binding has kinship with **Vector Symbolic Architectures / Hyperdimensional Computing** (binding, superposition, clean-up memory), useful when we want compositional symbols on top of vectors. ([arXiv][7], [Redwood Neuroscience Center][8])
+
+# 2) Core components — risks, upgrades, and concrete choices
+
+## 2.1 H\[].map canonical key + similarity
+
+* **Similarity metric.** Cosine similarity is standard in IR/vector search; numerically stable and scale-invariant. Keep it, but add a **calibrated threshold** τ to force an explicit “OOV/unknown” when `cos < τ` (e.g., 0.80–0.90 depending on domain). ([Stanford Natural Language Processing][9], [SIGIR][10])
+* **ANN index choice.** For **≈10^7–10^9** keys, back the map with **HNSW** (fast, high-recall graph index) or **IVF+PQ (FAISS)** to trade recall/latency/storage (HNSW for in-RAM low-latency, PQ for RAM compression). Typical HNSW settings at scale: `M≈16`, `efConstruction≈200`, `efSearch≈64–128`. ([arXiv][11], [TigerData][12], [GitHub][13], [PubMed][14])
+* **String/int key canonicalization.** If the integer key is an alias for a token/category ID, pre-normalize to a canonical embedding via a learned projection (so distance is meaningful). For fuzzy discrete keys (e.g., spell-variants), consider **metric trees** (BK-tree / VP-tree) over edit/Bregman distances for the fallback path. ([Wikipedia][15])
+* **Collision & drift control.** Use **product quantization** to compress the datastore (e.g., 16 subquantizers × 8-bit codebooks ⇒ **16 bytes/vector**, \~4–8× RAM reduction with small recall loss). Periodically **re-train PQ codebooks** to counter embedding drift across training stages. ([PubMed][14])
+
+## 2.2 Constraint registers H\[].CRs (Turing-complete micro-ops)
+
+* **Expressivity vs. verifiability.** Turing-complete CRs are powerful but complicate proofs and training. For training and safety rails, define **two modes**: (A) a **decidable fragment** (finite-state / simple arithmetic) used online for gating and verifiable invariants; (B) a **full CR** sandboxed to bounded fuel/step limits for exploratory program induction. Tie simple CR properties to **SMT checks** for step-wise guarantees. ([Malla Reddy College of Engineering][16])
+* **Neuro-symbolic proving.** For tight learning loops, try **SATNet / NeuroSAT** (differentiable or learned SAT) in the inner loop; for hard constraints, call an external **SMT solver (Z3)** with a budget—cache models and UNSAT cores keyed by `(state, constraints)` to amortize. ([arXiv][17])
+* **Discrete training strategy.** During training, keep determinism but allow gradient flow via **Gumbel-Softmax** / **straight-through estimators**, anneal to hard decisions, and optionally sparsify CR usage with **L0/Hard-Concrete**. ([arXiv][18])
+
+## 2.3 State transitions H\[x] → H\[x+1] via next-state CRs
+
+* **Model as a Mealy-style FSM:** Output and next state depend on `(state, input)` at step `x`. This makes the “attention as transition” precise and gives we a clean interface between **per-token constraints** and **memory update**. ([Military Science at UF][19], [TutorialsPoint][20])
+* **Attention = kernelized lookup.** If we later blend in token-level attention, consider **kernelized/linear attention** variants (e.g., **Performers/FAVOR+**) for **O(n)** memory/time on long contexts—plays nicely with deterministic execution planning. ([arXiv][21], [OpenReview][22])
+
+## 2.4 Determinism in training/inference
+
+* **Hardware/stack realities.** Strict bit-for-bit determinism on GPUs is non-trivial due to **atomic ops, non-associative FP reductions, cuDNN algorithm selection**. Enforce: fixed seeds, `torch.use_deterministic_algorithms(True)`, set `CUBLAS_WORKSPACE_CONFIG`, avoid atomics in reductions, and pin cuDNN to deterministic kernels (accept speed hit). For ultra-strict builds, run sensitive reductions on CPU or custom deterministic GPU kernels. ([PyTorch][23], [PyTorch Documentation][24], [NVIDIA Developer Forums][25], [NVIDIA Developer Download][26])
+
+## 2.5 Built-ins for “space” and sentence structure
+
+* **Whitespace/format effectors are tricky.** Normalize **Unicode spaces** (U+0020, U+00A0, U+200B…), standardize line-break/newline handling, and treat **format effectors** (CR/LF/HT/VT/FF) carefully in the tokenizer and CR predicates; this avoids state explosions from visually identical but semantically distinct blanks. ([Wikipedia][27], [Unicode][28])
+
+## 2.6 Distillation to a relational store (post-training)
+
+* **Schema pattern.** Persist “knowledge artifacts” into an **RDBMS** with tables like `Entity`, `Assertion`, `Constraint`, `Evidence`, `Derivation` (+ `Provenance`). Use **event sourcing** for auditability and time-travel (“how did we infer this?”). This matches the **relational model’s** strengths (normalization, declarative queries) and lets us revisit past states deterministically. ([Penn Engineering][29], [martinfowler.com][30])
+
+# 3) Suggested minimal prototype (deterministic, measurable)
+
+**Memory / keys**
+
+* Embedding dim: **D=1024** (float32 during training; quantize to **PQ-16×8** ⇒ 16B/code at serve time).
+* Index: **HNSW** with `M=16`, `efConstruction=200`, `efSearch=64` for low latency; fall back to **IVF+PQ** when RAM bound.
+* Acceptance: return `(best_value, cos)`; if `cos < τ=0.85`, emit `UNKNOWN` and route to backoff (e.g., rule program / RAG). ([arXiv][11], [PubMed][14])
+
+**Constraint registers (CR ISA, v0)**
+
+* **R=32** general registers (64-bit ints), **F=16** FP regs (float32), **B=32** booleans.
+* Core ops (deterministic, total): `ADD/SUB/MUL`, `CMP{LT,LE,EQ}`, `SELECT`, bit-ops, bounded loops with **fuel** counter, pure functions only (no time/random).
+* **Step contract:** each token step must (i) read only `H[x]`, (ii) produce `H[x+1]` and proof obligations (`φ_i`).
+
+**Neuro-symbolic verifier**
+
+* For lightweight invariants (`bounds, sortedness, type tags`): compile to **Z3** queries per step, < **2 ms** budget; cache `{(state, φ) → {SAT/UNSAT, model}}`.
+* For structural combinatorics: test **SATNet** on synthetic constraints to keep backprop smooth. ([ResearchGate][31], [arXiv][17])
+
+**Training loop (deterministic settings)**
+
+* Discrete choices via **Gumbel-Softmax** (τ anneal: 1.0 → 0.1) + **straight-through**; freeze to argmax at the end.
+* Deterministic PyTorch: fixed seeds; `use_deterministic_algorithms(True)`; set `CUBLAS_WORKSPACE_CONFIG=:16:8`; avoid atomics in custom ops. ([arXiv][18], [PyTorch][23])
+
+**Workloads (curriculum)**
+
+* **Phase A (algorithms):** addition/sorting/date parsing (NPI-style supervised traces).
+* **Phase B (language):** sentence normalization, category tagging with CR guards; compare to **kNN-LM baseline** on rare-token perplexity and factual probes; ablate with and without ANN-backed `H[]`. ([arXiv][32])
+
+# 4) Evaluation metrics (deterministic + capability)
+
+* **Bitwise determinism:** repeat **K=100** runs, require identical logits/sequences; if not, pinpoint kernels/ops violating determinism policy. ([PyTorch Documentation][33])
+* **Constraint satisfaction:** % of steps where all asserted `φ_i` are **UNSAT-violations** (i.e., constraints hold).
+* **Retrieval effectiveness:** ANN recall\@1/10 and latency percentiles (p50/p95).
+* **LM quality:** perplexity vs. kNN-LM/RETRO-size-matched; rare-token accuracy lift. ([arXiv][3])
+* **Verifier overhead:** mean per-step ms and cache hit-rate in Z3.
+
+# 5) Practical cautions (and mitigations)
+
+* **Cascading “closest-key” errors.** Always expose the similarity and a calibrated abstention (`UNKNOWN`), and allow multi-hit voting (top-k agreement) before committing a state change. ([Stanford Natural Language Processing][9])
+* **Unicode corner cases.** Normalize space/control characters up-front (NFKC + custom whitespace map) to prevent logical duplication of states from visually identical strings. ([Wikipedia][27], [Unicode][28])
+* **Verifier head-of-line blocking.** Bound solver time strictly; if timeout, mark `φ_i` “unchecked” and continue with sandboxed CR decisions, logging the debt for off-line audit. ([Stanford Theory][34])
+* **GPU nondeterminism.** Avoid FP atomics and async reductions; if we must reduce on GPU, structure kernels for **unique write indices** and deterministic reduction orders. ([NVIDIA Developer Forums][25])
+
+# 6) Why I think this is promising
+
+* We’re blending **retrieval (explicit memory)** + **programmed constraints (symbolic control)** + **deterministic execution**, which matches what we know improves factuality, compositional generalization, and auditability (kNN-LM/RETRO/RAG; NPI/NTM; RDBMS/event-sourcing). The open risk is systems complexity (indexing + CR ISA + verifier). I’d still proceed—start narrow and instrument everything for determinism and constraint health. ([arXiv][3], [Proceedings of Machine Learning Research][5], [PubMed][2], [Penn Engineering][29])
+
+---
+
+## Compact build sheet (we can hand to an engineer)
+
+* **Tokenizer/Normalizer:** Unicode whitespace/control normalization; sentence boundary detector with rule CRs. ([Wikipedia][27])
+* **Embeddings:** 1024-D; cosine; ANN: HNSW (`M=16`, `efC=200`, `efS=64`) or IVF-PQ (16×8). ([arXiv][11], [PubMed][14])
+* **H\[].map API:** `get(int key) -> (value, cos)`, return `UNKNOWN` if `cos < 0.85`.
+* **CR ISA v0:** 32 int regs, 16 fp, 32 bool; fuel-bounded loops; pure ops only.
+* **Verifier:** Z3 with 2 ms/call budget; SATNet for differentiable phases. ([ResearchGate][31], [arXiv][17])
+* **Training:** Gumbel-Softmax + ST; deterministic PyTorch flags; CI that runs an identical-output check across 3 GPUs. ([arXiv][18], [PyTorch][23])
+* **Metrics:** determinism (bitwise), constraint pass-rate, recall/latency, perplexity vs. kNN-LM.
+
+---
+
+### References (textual URLs)
+
+```
+Neural Turing Machines — https://arxiv.org/abs/1410.5401
+Differentiable Neural Computers — https://www.nature.com/articles/nature20101
+Neural Programmer / Interpreter — https://arxiv.org/abs/1511.04834 , https://arxiv.org/abs/1511.06279
+kNN-LM — https://arxiv.org/abs/1911.00172
+RETRO — https://arxiv.org/abs/2112.04426
+RAG — https://arxiv.org/abs/2005.11401
+HNSW — https://arxiv.org/abs/1603.09320
+FAISS PQ — https://pubmed.ncbi.nlm.nih.gov/21088323/  and https://github.com/facebookresearch/faiss/wiki
+BK-tree / VP-tree — https://en.wikipedia.org/wiki/BK-tree , https://en.wikipedia.org/wiki/Vantage-point_tree
+VSA / HRR / HDC — https://arxiv.org/abs/2111.06077 , https://arxiv.org/abs/2112.15424 , https://rctn.org/vs265/kanerva09-hyperdimensional.pdf
+Cosine similarity (IR) — https://nlp.stanford.edu/IR-book/information-retrieval-book.html
+Performers (kernelized attention) — https://arxiv.org/abs/2009.14794
+NeuroSAT / SATNet — https://arxiv.org/abs/1802.03685 , https://arxiv.org/abs/1905.12149
+Z3 SMT — https://www.microsoft.com/en-us/research/publication/z3-an-efficient-smt-solver/
+Deterministic PyTorch — https://pytorch.org/docs/stable/notes/randomness.html , https://pytorch.org/docs/stable/generated/torch.use_deterministic_algorithms.html
+GPU determinism caveats — https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9911-determinism-in-deep-learning.pdf
+Unicode spaces / format characters — https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-23/
+Relational model (Codd 1970) — https://dl.acm.org/doi/10.1145/362384.362685
+Event sourcing — https://martinfowler.com/eaaDev/EventSourcing.html
+```
+
+## Future & References
+
+I could turn this into a small **prototype plan** (module layout + test harness + determinism CI script + FAISS/HNSW scaffolding) and a **SQL schema** for the post-training artifact store.
+
+[1]: https://arxiv.org/abs/1410.5401?utm_source=chatgpt.com "Neural Turing Machines"
+[2]: https://pubmed.ncbi.nlm.nih.gov/27732574/?utm_source=chatgpt.com "Hybrid computing using a neural network with dynamic ..."
+[3]: https://arxiv.org/abs/1911.00172?utm_source=chatgpt.com "Generalization through Memorization: Nearest Neighbor Language Models"
+[4]: https://openreview.net/forum?id=HklBjCEKvH&utm_source=chatgpt.com "Generalization through Memorization: Nearest Neighbor ..."
+[5]: https://proceedings.mlr.press/v162/borgeaud22a/borgeaud22a.pdf?utm_source=chatgpt.com "Improving Language Models by Retrieving from Trillions of ..."
+[6]: https://proceedings.neurips.cc/paper/2020/file/6b493230205f780e1bc26945df7481e5-Paper.pdf?utm_source=chatgpt.com "Retrieval-Augmented Generation for Knowledge-Intensive ..."
+[7]: https://arxiv.org/abs/2111.06077?utm_source=chatgpt.com "A Survey on Hyperdimensional Computing aka Vector Symbolic Architectures, Part I: Models and Data Transformations"
+[8]: https://rctn.org/vs265/kanerva09-hyperdimensional.pdf?utm_source=chatgpt.com "Hyperdimensional Computing"
+[9]: https://nlp.stanford.edu/IR-book/information-retrieval-book.html?utm_source=chatgpt.com "Introduction to Information Retrieval - Stanford NLP Group"
+[10]: https://sigir.org/afirm2019/slides/02.%20Monday-%20IR%20Fundamentals%20-%20Grace%20Yang%20-%20AFIRM19-IR.pdf?utm_source=chatgpt.com "Information Retrieval: An Introduction"
+[11]: https://arxiv.org/abs/1603.09320?utm_source=chatgpt.com "Efficient and robust approximate nearest neighbor search ... - arXiv"
+[12]: https://www.tigerdata.com/learn/hnsw-vs-diskann?utm_source=chatgpt.com "HNSW vs. DiskANN - TigerData"
+[13]: https://github.com/facebookresearch/faiss/wiki?utm_source=chatgpt.com "Home · facebookresearch/faiss Wiki"
+[14]: https://pubmed.ncbi.nlm.nih.gov/21088323/?utm_source=chatgpt.com "Product quantization for nearest neighbor search"
+[15]: https://en.wikipedia.org/wiki/BK-tree?utm_source=chatgpt.com "BK-tree"
+[16]: https://mrce.in/ebooks/Automata%20Theory%2C%20Languages%2C%20%26%20Computation%20Introduction%203rd%20Ed.pdf?utm_source=chatgpt.com "Automata Theory, Languages,and Computation"
+[17]: https://arxiv.org/abs/1905.12149?utm_source=chatgpt.com "SATNet: Bridging deep learning and logical reasoning using a differentiable satisfiability solver"
+[18]: https://arxiv.org/abs/1611.01144?utm_source=chatgpt.com "Categorical Reparameterization with Gumbel-Softmax"
+[19]: https://mil.ufl.edu/3701/classes/joel/16%20Lecture.pdf?utm_source=chatgpt.com "LECTURE #16: Moore & Mealy Machines"
+[20]: https://www.tutorialspoint.com/automata_theory/automata_theory_mealy_machine.htm?utm_source=chatgpt.com "Mealy Machine in Automata Theory"
+[21]: https://arxiv.org/abs/2009.14794?utm_source=chatgpt.com "Rethinking Attention with Performers"
+[22]: https://openreview.net/forum?id=Ua6zuk0WRH&utm_source=chatgpt.com "Rethinking Attention with Performers"
+[23]: https://pytorch.org/docs/stable/generated/torch.use_deterministic_algorithms.html?utm_source=chatgpt.com "torch.use_deterministic_algorithms"
+[24]: https://docs.pytorch.org/docs/stable/notes/randomness.html?utm_source=chatgpt.com "Reproducibility — PyTorch 2.8 documentation"
+[25]: https://forums.developer.nvidia.com/t/reproducibility-of-atomic-operations/136299?utm_source=chatgpt.com "Reproducibility of atomic operations - Legacy PGI Compilers"
+[26]: https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9911-determinism-in-deep-learning.pdf?utm_source=chatgpt.com "Determinism in Deep Learning (S9911)"
+[27]: https://en.wikipedia.org/wiki/Whitespace_character?utm_source=chatgpt.com "Whitespace character"
+[28]: https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-23/?utm_source=chatgpt.com "Special Areas and Format Characters"
+[29]: https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf?utm_source=chatgpt.com "[PDF] A Relational Model of Data for Large Shared Data Banks"
+[30]: https://martinfowler.com/eaaDev/EventSourcing.html?utm_source=chatgpt.com "Event Sourcing"
+[31]: https://www.researchgate.net/publication/225142568_Z3_an_efficient_SMT_solver?utm_source=chatgpt.com "(PDF) Z3: an efficient SMT solver"
+[32]: https://arxiv.org/pdf/1511.06279?utm_source=chatgpt.com "arXiv:1511.06279v4 [cs.LG] 29 Feb 2016"
+[33]: https://docs.pytorch.org/docs/stable/generated/torch.use_deterministic_algorithms.html?utm_source=chatgpt.com "torch.use_deterministic_algorithms"
+[34]: https://theory.stanford.edu/~barrett/pubs/KBD%2B17.pdf?utm_source=chatgpt.com "Reluplex: An Efficient SMT Solver for Verifying Deep Neural ..."
+
+## Builtin Production Grammar
 
 Provided, is an **elegant proof kernel** grounded in **type theory**, inspired by the **Curry–Howard correspondence**, and minimal enough to be understandable, extensible, and verifiable. It models **intuitionistic propositional logic** using **dependent types**, and serves as a foundational "proof kernel" in the style of **pure type systems (PTS)** and **minimalist theorem provers** like those used in *Coq*, *Lean*, or *Agda*.
 
