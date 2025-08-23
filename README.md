@@ -53,11 +53,13 @@ vision, audio, video, and multimodal model, for both inference and training. Vis
 
 ## Huggingface-transformer-2025-fork-
 
-This architecture, after initial training, distills subsequent language artifacts into an RDBMS. The inititial (stochastic) model is then refined via an integrated theorem prover (modeled as a constraint-based, indexable tensor-field) to ultimately realize a decidable (i.e., deterministic) architecture, which employs next-token generation via deterministic insight. Ontology synergy-matching capabilities is also supported for situations where next-token prediction constraints are inadequate.
+In this architecture, after initial training, the inititial (stochastically bootstrapped) model evolves into a deterministic refinement via an indefinite process called Reflection (managed self-distillation + an optimization Observer) and an integrated theorem prover (modeled as a constraint-based, indexable tensor-field. Initially stochastic but eventually guided by the model's formal language) to ultimately realize a decidable (i.e., deterministic) architecture, which employs next-token generation via deterministic insight. Ontology synergy-matching capabilities are also supported for situations when next-token prediction constraints are inadequate.
 
 ## Structual Overview
 
 In a deterministic novel LLM architecture I am imagining a dictionary/hash map elemental model, H[].map(...), which has constraints registers, H[].CRs. The hash map, when given an integer key, always returns two values : 1) a value whose (canonical) key closest matches an existing (hash map) key; and 2) a cosine-similarity 0.00-1.00, where 1.00 indicates certainty the key exists. The reason for this is in case the key doesn't exist in other maps (i.e., do an intuitive guess!) This data structure can be used during training to represent common language artifacts such as Categories, Subjects, and or Ideas, etc. ; and its' values distill relevant tokens -- per a match on constraints in the H[].CRs. The H[].CRs, I should mention, are Turing Complete, and capable of representing all decidable algorithms. During training, state 0 -- which includes constraints, is constructed in, for example, H[0], via (opcodes) micro instructions. Next state proceeds thereafter. This architecture is intended for common language, so the space ' ' character, format effectors and a notion of what a sentence is, is built-in to efficiently capture state. The attention (i.e., transition!) between H[x] to H[x + 1] is captured via all N next-state constraints registers, H[x +1].CR[N]. During training, a constraint-indexable tensor field serves as the theorem prover space, allowing the architecture to infer other attributes, constraints and valid states for the current state. Post-training, I considered distilling knowledge artifacts into an RDBMS!
+
+## (Stochastic) Bootstrapping
 
 ## Current Progress
 
